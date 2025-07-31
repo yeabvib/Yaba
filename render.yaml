@@ -1,10 +1,11 @@
-# render.yaml
+# Correct render.yaml
+
 services:
   - type: web
     name: yeab-game-zone-api
     env: python
     plan: starter # Use a paid plan for production to prevent sleeping
-    buildCommand: "pip install -r requirements.txt"
+    buildCommand: "pip install -r requirements.txt && python main.py initdb"
     startCommand: "gunicorn -w 4 -k uvicorn.workers.UvicornWorker api.main:app"
     healthCheckPath: /health
     envVars:
