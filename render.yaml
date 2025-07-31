@@ -1,60 +1,14 @@
-# Correct render.yaml - Final Version
+# render.yaml - DIAGNOSTIC VERSION
 
 services:
   - type: web
     name: yeab-game-zone-api
     env: python
     plan: starter
-    buildCommand: "pip install -r requirements.txt && python main.py initdb"
-    startCommand: "gunicorn -w 4 -k uvicorn.workers.UvicornWorker api.main:app"
-    healthCheckPath: /health
-    envVars:
-      - key: DATABASE_URL
-        fromDatabase:
-          name: yeab-ludo-db
-          property: connectionString
-      - key: TELEGRAM_BOT_TOKEN
-        sync: false
-      - key: CHAPA_API_KEY
-        sync: false
-      - key: WEBHOOK_URL
-        fromService:
-          type: web
-          name: yeab-game-zone-api
-          property: url
-
-  - type: pserv
-    name: yeab-ludo-db
-    databaseName: yeab_game_db
-    databaseUser: yeab_user
-    plan: free
-
-  # --- THIS SECTION IS CORRECTED ---
-  - type: worker
-    name: yeab-game-forfeit-worker
-    env: python
-    plan: starter
     buildCommand: "pip install -r requirements.txt"
-    # The start command is now simpler and more robust.
-    # It will just sleep, preventing crashes. You can add real logic later.
-    startCommand: "while true; do echo 'Worker is alive...'; sleep 300; done"
+    # This start command will just list files and sleep.
+    # It cannot fail unless the whole environment is broken.
+    startCommand: "echo '--- Starting Diagnostic ---'; ls -R; echo '--- Diagnostic Finished ---'; while true; do sleep 300; done"
     envVars:
-      - key: DATABASE_URL
-        fromDatabase:
-          name: yeab-ludo-db
-          property: connectionString
-      - key: TELEGRAM_BOT_TOKEN
-        sync: false```
-
-**What did we change?**
-We changed the `startCommand` for the worker to a simple loop that just prints a message and waits. This prevents it from crashing and allows your main web service to start correctly. You can implement the actual forfeit logic later, but the most important thing now is to get the deployment "Live".
-
-**Step 2: Commit the Change**
-
-Commit this final change to your `render.yaml` file on GitHub.
-
-**Step 3: Deploy**
-
-A new deployment will start on Render. This time, all the configurations are correct. The build will succeed, and your application should finally start and stay "Live".
-
-This has been a long process, but you are at the very end. This fix should work.
+      - key: PYTHON_VERSION
+        value: 3.10.12
